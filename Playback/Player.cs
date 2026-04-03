@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace GotaSequenceLib.Playback {
 
@@ -1074,6 +1076,7 @@ namespace GotaSequenceLib.Playback {
         /// <param name="fileName">The file name.</param>
         public void Record(string fileName) {
             _mixer.CreateWaveWriter(fileName);
+            _mixer.Volume = 0.5f;                           // Avoid clipping
             InitEmulation();
             _tracks[0].CurEvent = currEventOverride;
             State = PlayerState.Recording;
