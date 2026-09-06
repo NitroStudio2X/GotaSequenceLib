@@ -52,6 +52,7 @@ namespace GotaSequenceLib.Playback {
             }
         }
 
+
         //Private variables.
         private readonly Track[] _tracks = new Track[0x10];
         private readonly Mixer _mixer;
@@ -79,6 +80,7 @@ namespace GotaSequenceLib.Playback {
         public event NotePressedHandler NotePressed = delegate {};
         public event NotePressedHandler NoteReleased = delegate {};
         public delegate void NotePressedHandler(object sender, NoteEventArgs e);
+        public event EventHandler OutputTick;
 
         /// <summary>
         /// Note event args.
@@ -1079,6 +1081,10 @@ namespace GotaSequenceLib.Playback {
             _mixer.Volume = 0.5f;                           // Avoid clipping
             InitEmulation();
             _tracks[0].CurEvent = currEventOverride;
+            if(OutputTick != null)
+            {
+                OutputTick.Invoke(this, new EventArgs());
+            }
             State = PlayerState.Recording;
             CreateThread();
             WaitThread();

@@ -33,6 +33,11 @@ namespace GotaSequenceLib.Playback {
         public bool[] Mutes = new bool[16];
 
         /// <summary>
+        /// Multimedia Device.
+        /// </summary>
+        public MMDevice Device;
+
+        /// <summary>
         /// Volume.
         /// </summary>
         public float Volume = 1f;
@@ -50,7 +55,7 @@ namespace GotaSequenceLib.Playback {
         /// <summary>
         /// Create a new mixer.
         /// </summary>
-        public Mixer() {
+        public Mixer(string DeviceID) {
 
             // The sampling frequency of the mixer is 1.04876 MHz with an amplitude resolution of 24 bits, but the sampling frequency after mixing with PWM modulation is 32.768 kHz with an amplitude resolution of 10 bits.
             // - gbatek
@@ -68,6 +73,10 @@ namespace GotaSequenceLib.Playback {
                 DiscardOnBufferOverflow = true,
                 BufferLength = _samplesPerBuffer * 64
             };
+
+            MMDeviceEnumerator MMdevEnum = new MMDeviceEnumerator();
+            Device = MMdevEnum.GetDevice(DeviceID);
+
             Init(_buffer);
 
         }
@@ -77,13 +86,22 @@ namespace GotaSequenceLib.Playback {
         /// </summary>
         /// <param name="waveProvider"></param>
         protected void Init(IWaveProvider waveProvider) {
-            try {
-                _out = new WasapiOut();
-            } catch {
-                _out = new NullWavePlayer();
+            if (Device != null)
+            {
+                try
+                {
+                    _out = new WasapiOut(Device, AudioClientShareMode.Shared, true, 0);
+                }
+                catch
+                {
+                    _out = new NullWavePlayer();
+                }
+                _out.Init(waveProvider);
+                _out.Play();
+            } else
+            {
+                throw new Exception("Audio Device not loaded");
             }
-            _out.Init(waveProvider);
-            _out.Play();
         }
 
         /// <summary>
