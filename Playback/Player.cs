@@ -1040,12 +1040,19 @@ namespace GotaSequenceLib.Playback {
         /// Play the song.
         /// </summary>
         public void Play() {
-            if (State == PlayerState.Playing || State == PlayerState.Paused || State == PlayerState.Stopped) {
-                Stop();
-                InitEmulation();
-                _tracks[0].CurEvent = currEventOverride;
-                State = PlayerState.Playing;
-                CreateThread();
+            if (_mixer != null && _mixer.Device.State == NAudio.CoreAudioApi.DeviceState.Active)
+            {
+                if (State == PlayerState.Playing || State == PlayerState.Paused || State == PlayerState.Stopped)
+                {
+                    Stop();
+                    InitEmulation();
+                    _tracks[0].CurEvent = currEventOverride;
+                    State = PlayerState.Playing;
+                    CreateThread();
+                }
+            } else
+            {
+                MessageBox.Show("No audio device is set. Please set one in Settings.", "No Audio Devices", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
