@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace GotaSequenceLib.Playback {
 
@@ -50,6 +52,7 @@ namespace GotaSequenceLib.Playback {
             }
         }
 
+
         //Private variables.
         private readonly Track[] _tracks = new Track[0x10];
         private readonly Mixer _mixer;
@@ -77,6 +80,7 @@ namespace GotaSequenceLib.Playback {
         public event NotePressedHandler NotePressed = delegate {};
         public event NotePressedHandler NoteReleased = delegate {};
         public delegate void NotePressedHandler(object sender, NoteEventArgs e);
+        public event EventHandler OutputTick;
 
         /// <summary>
         /// Note event args.
@@ -1036,12 +1040,19 @@ namespace GotaSequenceLib.Playback {
         /// Play the song.
         /// </summary>
         public void Play() {
-            if (State == PlayerState.Playing || State == PlayerState.Paused || State == PlayerState.Stopped) {
-                Stop();
-                InitEmulation();
-                _tracks[0].CurEvent = currEventOverride;
-                State = PlayerState.Playing;
-                CreateThread();
+            if (_mixer != null && _mixer.Device.State == NAudio.CoreAudioApi.DeviceState.Active)
+            {
+                if (State == PlayerState.Playing || State == PlayerState.Paused || State == PlayerState.Stopped)
+                {
+                    Stop();
+                    InitEmulation();
+                    _tracks[0].CurEvent = currEventOverride;
+                    State = PlayerState.Playing;
+                    CreateThread();
+                }
+            } else
+            {
+                MessageBox.Show("No audio device is set. Please set one in Settings.", "No Audio Devices", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -1074,8 +1085,13 @@ namespace GotaSequenceLib.Playback {
         /// <param name="fileName">The file name.</param>
         public void Record(string fileName) {
             _mixer.CreateWaveWriter(fileName);
+            _mixer.Volume = 0.5f;                           // Avoid clipping
             InitEmulation();
             _tracks[0].CurEvent = currEventOverride;
+            if(OutputTick != null)
+            {
+                OutputTick.Invoke(this, new EventArgs());
+            }
             State = PlayerState.Recording;
             CreateThread();
             WaitThread();

@@ -391,7 +391,13 @@ namespace GotaSequenceLib {
 
                     //Mod delay.
                     case SequenceCommands.ModDelay:
-                        t.Insert(ticks, new ChannelMessage(ChannelCommand.Controller, trackNum, 26, args[0]));
+                        if (args[0] > 127)
+                        {
+                            t.Insert(ticks, new ChannelMessage(ChannelCommand.Controller, trackNum, 26, 127));
+                        } else
+                        {
+                            t.Insert(ticks, new ChannelMessage(ChannelCommand.Controller, trackNum, 26, args[0]));
+                        }                        
                         break;
 
                     //Tempo.
