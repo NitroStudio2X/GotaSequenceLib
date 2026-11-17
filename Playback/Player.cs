@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
-using System.Windows.Forms;
 using System.Drawing;
 
 namespace GotaSequenceLib.Playback {
@@ -81,6 +80,7 @@ namespace GotaSequenceLib.Playback {
         public event NotePressedHandler NoteReleased = delegate {};
         public delegate void NotePressedHandler(object sender, NoteEventArgs e);
         public event EventHandler OutputTick;
+        public bool AudioDeviceSet = false;
 
         /// <summary>
         /// Note event args.
@@ -1042,6 +1042,7 @@ namespace GotaSequenceLib.Playback {
         public void Play() {
             if (_mixer != null && _mixer.Device.State == NAudio.CoreAudioApi.DeviceState.Active)
             {
+                AudioDeviceSet = true;
                 if (State == PlayerState.Playing || State == PlayerState.Paused || State == PlayerState.Stopped)
                 {
                     Stop();
@@ -1052,7 +1053,8 @@ namespace GotaSequenceLib.Playback {
                 }
             } else
             {
-                MessageBox.Show("No audio device is set. Please set one in Settings.", "No Audio Devices", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // MessageBox.Show("No audio device is set. Please set one in Settings.", "No Audio Devices", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                AudioDeviceSet = false;
             }
         }
 

@@ -1,11 +1,11 @@
 ﻿using GotaSoundIO.Sound.Playback;
-using GotaSoundIO.IO.Backend.WASAPI;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NAudio.CoreAudioApi;
 
 namespace GotaSequenceLib.Playback {
 
