@@ -14,4 +14,7 @@
     <Compile Remove="Playback\AbstractTrack.cs" />
     <Compile Remove="Playback\MidiTrack.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="3.3.0" />
+  </ItemGroup>
 </Project>
